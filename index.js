@@ -32,13 +32,13 @@ async function run() {
             res.send(brands)
         });
 
-        // app.get('/category/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { category_id: id };
-        //     const category = await categoriesCollection.find(query).toArray();
-        //     // console.log(category)
-        //     return res.send(category)
-        // });
+        app.get('/category/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { category_id: id };
+            const category = await categoriesCollection.find(query).toArray();
+            // console.log(category)
+            return res.send(category)
+        });
 
 
     }
