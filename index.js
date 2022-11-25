@@ -1,32 +1,56 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 5000;
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
+const port = process.env.PORT || 5000;
 
-
-//middle wares
-app.use(cors());
+app.use(cors())
 app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send('poris server is running');
+})
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.5nmtx0a.mongodb.net/?retryWrites=true&w=majority`;
-// console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-    const collection = client.db("test").collection("devices");
-    // perform actions on the collection object
-    client.close();
-});
+console.log(uri)
 
 
+async function run() {
+    try {
+        const brandsCollection = client.db('poriComputers').collection('brands');
+        const categoriesCollection = client.db('poriComputers').collection('category');
 
-app.get('/', (req, res) => {
-    res.send('Pori-s computers is running')
-})
+        app.get('/brands', async (req, res) => {
+            const query = {}
+            const cursor = brandsCollection.find(query);
+            const brands = await cursor.toArray();
+            res.send(brands)
+        });
+
+        // app.get('/category/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { category_id: id };
+        //     const category = await categoriesCollection.find(query).toArray();
+        //     // console.log(category)
+        //     return res.send(category)
+        // });
+
+
+    }
+
+    finally {
+
+    }
+}
+
+run().catch(error => console.error(error))
+
 
 app.listen(port, () => {
-    console.log('pori-s computers server is running on port', port)
+    console.log(`Poris server running on port ${port}`);
 })
