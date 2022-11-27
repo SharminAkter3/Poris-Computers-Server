@@ -25,6 +25,9 @@ async function run() {
         const brandsCollection = client.db('poriComputers').collection('brands');
         const categoriesCollection = client.db('poriComputers').collection('category');
         const bookingsCollection = client.db('poriComputers').collection('bookings');
+        const usersCollection = client.db('poriComputers').collection('users');
+        const buyersCollection = client.db('poriComputers').collection('buyers');
+        const sellersCollection = client.db('poriComputers').collection('sellers');
 
         app.get('/brands', async (req, res) => {
             const query = {}
@@ -53,6 +56,24 @@ async function run() {
             console.log(booking);
             const result = await bookingsCollection.insertOne(booking);
             return res.send(result)
+        });
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            return res.send(result);
+        });
+
+        app.post('/buyers', async (req, res) => {
+            const buyer = req.body;
+            const result = await buyersCollection.insertOne(buyer);
+            return res.send(result);
+        });
+
+        app.post('/sellers', async (req, res) => {
+            const seller = req.body;
+            const result = await sellersCollection.insertOne(seller);
+            return res.send(result);
         });
 
 
