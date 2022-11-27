@@ -47,7 +47,7 @@ async function run() {
             const query = {}
             const cursor = brandsCollection.find(query);
             const brands = await cursor.toArray();
-            res.send(brands)
+            return res.send(brands)
         });
 
         app.get('/category/:id', async (req, res) => {
@@ -97,7 +97,13 @@ async function run() {
             }
             console.log(buyer);
             return res.status(403).send({ accessToken: '' })
-        })
+        });
+
+        app.get('/buyers', async (req, res) => {
+            const query = {};
+            const buyers = await buyersCollection.find(query).toArray();
+            return res.send(buyers);
+        });
 
 
         app.post('/buyers', async (req, res) => {
@@ -106,13 +112,17 @@ async function run() {
             return res.send(result);
         });
 
+        app.get('/sellers', async (req, res) => {
+            const query = {};
+            const sellers = await sellersCollection.find(query).toArray();
+            return res.send(sellers);
+        });
+
         app.post('/sellers', async (req, res) => {
             const seller = req.body;
             const result = await sellersCollection.insertOne(seller);
             return res.send(result);
         });
-
-
     }
 
     finally {
