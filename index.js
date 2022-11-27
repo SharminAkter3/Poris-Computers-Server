@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
 const app = express();
@@ -123,6 +123,48 @@ async function run() {
             const result = await sellersCollection.insertOne(seller);
             return res.send(result);
         });
+
+        app.put('/buyers/admin/:id', verifyJWT, async (req, res) => {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const buyer = await buyersCollection.findOne(query);
+
+            if (buyer?.role !== 'admin') {
+                return res.status(403).send({ message: 'Forbidden access' })
+            }
+
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await buyersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
+        app.put('/sellers/admin/:id', verifyJWT, async (req, res) => {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const seller = await sellersCollection.findOne(query);
+
+            if (seller?.role !== 'admin') {
+                return res.status(403).send({ message: 'Forbidden access' })
+            }
+
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await sellersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
     }
 
     finally {
