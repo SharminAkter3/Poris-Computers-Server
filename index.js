@@ -47,8 +47,7 @@ async function run() {
         const usersCollection = client.db('poriComputers').collection('users');
         const paymentsCollection = client.db('poriComputers').collection('payments');
         const productsCollection = client.db('poriComputers').collection('products');
-        // const buyersCollection = client.db('poriComputers').collection('buyers');
-        // const sellersCollection = client.db('poriComputers').collection('sellers');
+
 
         //get product brand from database
         app.get('/brands', async (req, res) => {
@@ -153,7 +152,7 @@ async function run() {
         });
 
         // update usersCollection in database
-        app.post('/buyers', async (req, res) => {
+        app.post('/buyers', verifyJWT, async (req, res) => {
             const buyer = req.body;
             const result = await usersCollection.insertOne(buyer);
             return res.send(result);
@@ -262,18 +261,25 @@ async function run() {
             res.send({ isBuyer: user?.role === 'buyer' });
         })
 
-        // app.get('/sellers', async (req, res) => {
-        //     const query = {};
-        //     const sellers = await sellersCollection.find(query).toArray();
-        //     return res.send(sellers);
-        // });
 
-        // app.post('/sellers', async (req, res) => {
-        //     const seller = req.body;
-        //     const result = await sellersCollection.insertOne(seller);
-        //     return res.send(result);
-        // });
+        // delete speccific seller from database if admin access
+        app.delete('/sellers/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(filter)
+            return res.send(result);
+        });
 
+        // delete speccific buyer from database if admin access
+        app.delete('/buyers/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(filter)
+            return res.send(result);
+        });
+
+
+        // load advertised items from database
         app.get('/advertised_product', async (req, res) => {
             const query = {
                 advertise: true
